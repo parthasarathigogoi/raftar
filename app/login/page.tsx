@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function LoginPage() { return <main className="gallery-access"><Link href="/" className="wordmark">RAF<span>TAR</span></Link><section><p className="eyebrow">Secure access</p><h1>Welcome back.</h1><p>Sign in is available through the secure RAFTAR account API while the customer-facing account interface is being completed.</p><Link href="/" className="text-link light-link">Return to RAFTAR</Link></section></main>; }

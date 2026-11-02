@@ -1,0 +1,3 @@
+import { Schema, model, models } from "mongoose";
+const UserSchema = new Schema({ name: { type: String, required: true, trim: true }, email: { type: String, required: true, unique: true, lowercase: true, trim: true }, phone: String, passwordHash: { type: String, required: true, select: false }, role: { type: String, enum: ["customer", "admin", "staff", "partner"], default: "customer" }, profileImage: String, status: { type: String, enum: ["active", "suspended", "pending"], default: "active" }, permissions: [{ type: String }] }, { timestamps: true });
+export const User = models.User || model("User", UserSchema);

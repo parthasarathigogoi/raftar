@@ -1,0 +1,6 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { BarChart3, BriefcaseBusiness, Camera, FileText, MapPinned, Wallet } from "lucide-react";
+import { currentUser } from "@/lib/auth";
+const links = [{ href: "/admin", label: "Overview", icon: BarChart3 }, { href: "/admin/enquiries", label: "Enquiries", icon: FileText }, { href: "/admin/bookings", label: "Bookings", icon: BriefcaseBusiness }, { href: "/admin/media-studio", label: "Media Studio", icon: Camera }, { href: "/admin/destinations", label: "Destinations", icon: MapPinned }, { href: "/admin/finance", label: "Finance", icon: Wallet }];
+export default async function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) { const user = await currentUser(); if (!user || !["admin", "staff"].includes(user.role)) redirect("/login"); return <div className="admin-shell"><aside><Link href="/admin" className="wordmark">RAF<span>TAR</span></Link><p>Management studio</p><nav>{links.map(({ href, label, icon: Icon }) => <Link key={href} href={href}><Icon />{label}</Link>)}</nav><Link className="back-site" href="/">← View website</Link></aside><div className="admin-main"><header><div><span>RAFTAR / ADMIN</span><h1>Management studio</h1></div><div className="admin-avatar">{user.name.slice(0, 1).toUpperCase()}</div></header>{children}</div></div>; }
