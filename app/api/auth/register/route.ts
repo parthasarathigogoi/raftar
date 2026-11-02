@@ -10,7 +10,7 @@ import { registerSchema } from "@/schemas/auth";
 export const POST = withDatabase(async (request: NextRequest) => {
   if (!rateLimit(`register:${request.headers.get("x-forwarded-for") || "unknown"}`, 3)) return fail("Please try again later.", 429);
   const parsed = registerSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return fail("Invalid registration details.", 422);
+  if (!parsed.success) return fail("Invalid registration details.", 400);
 
   await connectToDatabase();
   if (await User.exists({ email: parsed.data.email.toLowerCase() })) return fail("An account already exists for this email.", 409);

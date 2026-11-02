@@ -9,7 +9,7 @@ import { loginSchema } from "@/schemas/auth";
 
 export const POST = withDatabase(async (request: NextRequest) => {
   const parsed = loginSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return fail("Invalid email or password.", 422);
+  if (!parsed.success) return fail("Invalid email or password.", 400);
   const key = `login:${parsed.data.email.toLowerCase()}:${request.headers.get("x-forwarded-for") || "unknown"}`;
   if (!rateLimit(key)) return fail("Too many login attempts. Please try again later.", 429);
 
