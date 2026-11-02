@@ -33,8 +33,9 @@ export function withDatabase<Args extends unknown[]>(handler: (...args: Args) =>
     } catch (error) {
       const detail = redact(error instanceof Error ? `${error.name}: ${error.message}` : String(error));
       if (isConfigurationError(error)) {
+        const message = error instanceof Error ? error.message : "server configuration is incomplete.";
         console.error(`[raftar] missing server configuration — ${detail}`);
-        return fail("Server configuration error: MONGODB_URI is not set for this deployment.", 500);
+        return fail(`Server configuration error: ${message}`, 500);
       }
       if (isDatabaseError(error)) {
         console.error(`[raftar] database unavailable — ${detail}`);

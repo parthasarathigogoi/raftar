@@ -1,13 +1,14 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest } from "next/server";
+import { ConfigurationError } from "@/lib/db";
 
 export type Role = "admin" | "staff" | "partner" | "customer";
 export type SessionUser = { id: string; role: Role; email: string; name: string; permissions?: string[] };
 const cookieName = "raftar_session";
 const secret = () => new TextEncoder().encode(process.env.AUTH_SECRET || "");
 
-export async function createSession(user: SessionUser) { if (!process.env.AUTH_SECRET) throw new Error("AUTH_SECRET is not configured."); const payload = { ...user, permissions: user.permissions ? Array.from(user.permissions, String) : [] }; return new SignJWT(payload).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(secret()); }
+export async function createSession(user: SessionUser) { if (!process.env.AUTH_SECRET) throw new ConfigurationError("AUTH_SECRET is not configured."); const payload = { ...user, permissions: user.permissions ? Array.from(user.permissions, String) : [] }; return new SignJWT(payload).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(secret()); }
 export async function readSession(token?: string): Promise<SessionUser | null> { try { if (!token || !process.env.AUTH_SECRET) return null; const { payload } = await jwtVerify(token, secret()); return { id: String(payload.id), role: payload.role as Role, email: String(payload.email), name: String(payload.name), permissions: Array.isArray(payload.permissions) ? (payload.permissions as string[]) : [] }; } catch { return null; } }
 export async function currentUser() { return readSession((await cookies()).get(cookieName)?.value); }
 export type AuthResult = { user: SessionUser } | { error: string; status: 401 | 403 };
