@@ -2,13 +2,13 @@ import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { recordAudit } from "@/lib/audit";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { Notification } from "@/models/Notification";
 import { TripBooking } from "@/models/TripBooking";
 import { TripEvent } from "@/models/TripEvent";
 
 /** Send a trip announcement to every confirmed traveller on an event. */
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export const POST = withDatabase(async (request: NextRequest, { params }: { params: Promise<{ id: string }> }) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -35,4 +35,4 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   await recordAudit({ userId: auth.user.id, action: "trip.announcement_sent", module: "trip_events", recordId: id, description: `Announcement sent to ${sent} traveller(s) for "${event.title}"`, metadata: { sent } });
   return ok({ sent });
-}
+});

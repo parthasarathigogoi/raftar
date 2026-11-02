@@ -3,7 +3,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { requireRole } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { User } from "@/models/User";
 
 const updateSchema = z.object({
@@ -12,7 +12,7 @@ const updateSchema = z.object({
   password: z.string().min(12).max(128).optional().or(z.literal("")),
 });
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["customer", "admin", "staff", "partner"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
   const user = await User.findById(auth.user.id).select("name email phone role profileImage status createdAt").lean();
   if (!user) return fail("Your account could not be found.", 404);
   return ok({ profile: { id: String(user._id), name: user.name, email: user.email, phone: user.phone ?? null, role: user.role, profileImage: user.profileImage ?? null, createdAt: user.createdAt } });
-}
+});
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["customer", "admin", "staff", "partner"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -39,4 +39,4 @@ export async function PATCH(request: NextRequest) {
   const user = await User.findByIdAndUpdate(auth.user.id, update, { new: true }).select("name email phone role").lean();
   if (!user) return fail("Your account could not be found.", 404);
   return ok({ profile: { id: String(user._id), name: user.name, email: user.email, phone: user.phone ?? null, role: user.role } });
-}
+});

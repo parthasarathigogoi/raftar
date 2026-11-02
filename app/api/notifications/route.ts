@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { Notification } from "@/models/Notification";
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["customer", "admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
       createdAt: notification.createdAt,
     })),
   });
-}
+});
 
 /** Mark one notification, or all of them, as read. */
-export async function PATCH(request: NextRequest) {
+export const PATCH = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["customer", "admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -39,4 +39,4 @@ export async function PATCH(request: NextRequest) {
   if (!body?.id) return fail("Provide a notification id or set all to true.", 422);
   await Notification.updateOne({ _id: body.id, userId: auth.user.id }, { read: true });
   return ok({ updated: body.id });
-}
+});

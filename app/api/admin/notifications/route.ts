@@ -2,13 +2,13 @@ import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { recordAudit } from "@/lib/audit";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { Notification } from "@/models/Notification";
 import { TripBooking } from "@/models/TripBooking";
 import { User } from "@/models/User";
 import { announcementSchema } from "@/schemas/admin";
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
       createdAt: notification.createdAt,
     })),
   });
-}
+});
 
 /** Broadcast an announcement to a chosen audience. */
-export async function POST(request: NextRequest) {
+export const POST = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -55,4 +55,4 @@ export async function POST(request: NextRequest) {
   await recordAudit({ userId: auth.user.id, action: "notification.broadcast", module: "notifications", recordId: "broadcast", description: `Broadcast "${parsed.data.title}" to ${sent} recipient(s)`, metadata: { audience, sent } });
 
   return ok({ sent });
-}
+});

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { MediaAsset } from "@/models/MediaAsset";
 import { MediaProject } from "@/models/MediaProject";
 
@@ -9,7 +9,7 @@ import { MediaProject } from "@/models/MediaProject";
  * Private delivery gallery. Only the owning customer sees their delivered media —
  * assets are filtered by BOTH ownership and approval status.
  */
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["customer", "admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -46,4 +46,4 @@ export async function GET(request: NextRequest) {
       };
     }),
   });
-}
+});

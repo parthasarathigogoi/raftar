@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { listAdminBookings } from "@/lib/bookings";
-import { fail } from "@/lib/http";
+import { fail, withDatabase } from "@/lib/http";
 
 function csvCell(value: unknown) {
   const text = value === null || value === undefined ? "" : String(value);
@@ -9,7 +9,7 @@ function csvCell(value: unknown) {
 }
 
 /** Participant list export for a trip, as a CSV download. */
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -68,4 +68,4 @@ export async function GET(request: NextRequest) {
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
-}
+});

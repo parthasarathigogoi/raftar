@@ -56,3 +56,13 @@
 .fade{color:#7d8a83;font-size:12px}
 @media(max-width:1050px){.admin-split{grid-template-columns:1fr}}
 @media(max-width:640px){.admin-form-grid{grid-template-columns:1fr}}
+.admin-login{min-height:100vh;display:grid;place-items:center;background:var(--deep);padding:24px;font-family:'DM Sans',Arial,sans-serif}
+.admin-login-card{width:100%;max-width:400px;background:var(--cream);border:1px solid #d9d9d0;padding:38px 34px}
+.admin-login-card .wordmark{font-size:19px;letter-spacing:.16em;color:var(--deep);font-weight:700;text-decoration:none}
+.admin-login-card .wordmark span{color:var(--terra)}
+.admin-login-card h1{font-family:'DM Sans',Arial,sans-serif;font-size:23px;font-weight:600;letter-spacing:0;margin:14px 0 8px}
+.admin-login-card .hint{font-size:13px;line-height:1.65;color:#61736a;margin:0 0 24px}
+.admin-login-card form{display:flex;flex-direction:column;gap:16px}
+.admin-login-card .admin-btn{justify-content:center;margin-top:4px}
+.admin-login-card .back{display:inline-block;margin-top:24px;font-size:12px;color:#61736a;text-decoration:none}
+.admin-login-card .back:hover{color:var(--forest)}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import {
   BarChart3,
@@ -35,8 +36,12 @@ const links = [
 ];
 
 export default async function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // `/admin/login` is public: the proxy forwards the real pathname (see proxy.ts).
+  const pathname = (await headers()).get("x-raftar-pathname");
+  if (pathname === "/admin/login") return <>{children}</>;
+
   const user = await currentUser();
-  if (!user || !["admin", "staff"].includes(user.role)) redirect("/login");
+  if (!user || !["admin", "staff"].includes(user.role)) redirect("/admin/login");
   return (
     <div className="admin-shell">
       <aside>

@@ -1,11 +1,11 @@
 import { NextRequest } from "next/server";
 import { requireRole } from "@/lib/auth";
 import { connectToDatabase } from "@/lib/db";
-import { fail, ok } from "@/lib/http";
+import { fail, ok, withDatabase } from "@/lib/http";
 import { Partner } from "@/models/Partner";
 import { partnerInputSchema } from "@/schemas/admin";
 
-export async function GET(request: NextRequest) {
+export const GET = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -19,9 +19,9 @@ export async function GET(request: NextRequest) {
   return ok({
     partners: partners.map((partner) => ({ ...partner, id: String(partner._id) })),
   });
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withDatabase(async (request: NextRequest) => {
   const auth = await requireRole(request, ["admin", "staff"]);
   if (!("user" in auth)) return fail(auth.error, auth.status);
 
@@ -34,4 +34,4 @@ export async function POST(request: NextRequest) {
     email: parsed.data.email ? parsed.data.email.toLowerCase() : undefined,
   });
   return ok({ partner: { ...partner.toObject(), id: String(partner._id) } }, 201);
-}
+});
