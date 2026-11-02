@@ -1,0 +1,2 @@
+import { BookingPlanner } from "./planner";
+export default function PlanPage() { return <main className="planner-page"><div className="planner-hero"><p className="eyebrow light">Begin your RAFTAR story</p><h1>A journey built around your memories.</h1><p>Tell us the basics. Our team will check availability, shape a detailed quotation and confirm every part with you before any booking is made.</p></div><BookingPlanner /></main>; }

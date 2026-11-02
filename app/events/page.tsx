@@ -1,0 +1,3 @@
+import Link from "next/link";
+import { CalendarDays } from "lucide-react";
+export default function EventsPage() { return <main className="events-page"><Link className="wordmark" href="/">RAF<span>TAR</span></Link><section><CalendarDays/><p className="eyebrow">Upcoming travel</p><h1>New roads are being mapped.</h1><p>RAFTAR departures and storytelling expeditions will appear here when dates are confirmed. In the meantime, design a private travel experience around the dates that work for you.</p><Link className="button button-forest" href="/plan">Plan a private journey</Link></section></main>; }
